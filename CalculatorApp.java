@@ -29,22 +29,23 @@ public class CalculatorApp extends Stage {
 	HBox secondRow;
 	HBox thirdRow;
 	HBox fourthRow;
+	HBox fifthRow;
 	VBox root;
 	Scene mainScene;
 	GridPane thePane;
 	Text numberBox;
 	Text nameBox;
 	String inputStr = "";
-	long num1 = 0;
+	double num1 = 0.0; //represents user's first or only numeric input for operation
 	String operatorChar = "";
 	boolean start = true;
 	boolean numEntered = false;
 	boolean calculated = false;
 	
-	EventHandler<ActionEvent> numClick, clearClick, operatorClick;
+	EventHandler<ActionEvent> numClick, clearClick, operatorClick, unaryClick;
 	
 	Button zeroB, oneB, twoB, threeB, fourB, fiveB, sixB, sevenB, eightB, nineB, clearB,
-	plusB, minusB, equalsB, divB, multB;
+	plusB, minusB, equalsB, divB, multB, pwrB, lnB, factorB, sqRootB;
 	
 	/**
 	 * This method is the default constructor
@@ -163,6 +164,30 @@ public class CalculatorApp extends Stage {
 		multB.setOnAction(operatorClick);
 		multB.setBackground(new Background(new BackgroundFill(Color.DARKRED, null, null)));
 		multB.setTextFill(Color.LIMEGREEN);
+		
+		pwrB = new Button("^");
+		pwrB.setMinWidth(50);
+		pwrB.setOnAction(operatorClick);
+		pwrB.setBackground(new Background(new BackgroundFill(Color.DARKRED, null, null)));
+		pwrB.setTextFill(Color.LIMEGREEN);
+		
+		factorB = new Button("!");
+		factorB.setMinWidth(50);
+		factorB.setOnAction(unaryClick);
+		factorB.setBackground(new Background(new BackgroundFill(Color.DARKRED, null, null)));
+		factorB.setTextFill(Color.LIMEGREEN);
+		
+		lnB = new Button("ln(x)");
+		lnB.setMinWidth(50);
+		lnB.setOnAction(unaryClick);
+		lnB.setBackground(new Background(new BackgroundFill(Color.DARKRED, null, null)));
+		lnB.setTextFill(Color.LIMEGREEN);
+		
+		sqRootB = new Button("√x");
+		sqRootB.setMinWidth(50);
+		sqRootB.setOnAction(unaryClick);
+		sqRootB.setBackground(new Background(new BackgroundFill(Color.DARKRED, null, null)));
+		sqRootB.setTextFill(Color.LIMEGREEN);
 
 	} //setUpButtons
 	
@@ -193,11 +218,14 @@ public class CalculatorApp extends Stage {
 		fourthRow = new HBox(2);
 		fourthRow.getChildren().addAll(sevenB, eightB, nineB, multB);
 		
-		nameBox = new Text("Hunter McGarity | v1.0 | 8-2020");
+		fifthRow = new HBox(2);
+		fifthRow.getChildren().addAll(pwrB, factorB, lnB, sqRootB);
+		
+		nameBox = new Text("Hunter McGarity | v1.1 | 9-2020");
 		nameBox.setFill(Color.AQUA);
 		
-		root = new VBox(12);
-		root.getChildren().addAll(textHolder, fourthRow, thirdRow, secondRow, firstRow, nameBox);
+		root = new VBox(8);
+		root.getChildren().addAll(textHolder, fifthRow, fourthRow, thirdRow, secondRow, firstRow, nameBox);
 		root.setPrefWidth(180);
 		root.setPrefHeight(180);
 		root.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
@@ -231,14 +259,18 @@ public class CalculatorApp extends Stage {
 			inputNumbers(event);
 		};
 		
-		clearClick = event -> {
+		clearClick = event -> { //special-case event for when the user clicks the clear button
 			inputStr = "";
 			numEntered = false;
 			numberBox.setText(inputStr);
 		};
 		
-		operatorClick = event -> {
+		operatorClick = event -> { //event for when the user clicks any of the binary operator buttons
 			inputOperators(event);
+		};
+		
+		unaryClick = event -> { //event for when the user clicks any of the unary operator buttons
+			inputOperatorsUnary(event);
 		};
 		
 	} //setUpEvents
@@ -246,7 +278,8 @@ public class CalculatorApp extends Stage {
 	/**
 	 * This method performs the actual calculation specified by the user's
 	 * interation with the calculator. It uses a switch statement to differentiate between
-	 * the different operator buttons the user may select.
+	 * the different operator buttons the user may select. This method is associated with
+	 * all the calculator's binary operations.
 	 * 
 	 * @param num1 the double representing the first number entered by the user
 	 * @param num2 the double representing the second number entered by the user (after the operator)
@@ -255,21 +288,41 @@ public class CalculatorApp extends Stage {
 	 */
 	
 	private double calculate(double num1, double num2, String operation) {
+		double result;
 		switch(operation) {
 		
-		case ("-"):
-			return num1 - num2;
+		case ("^"): //user clicked the power button
+			result = Math.pow(num1, num2);
+			numberBox.setText(Double.toString(result));
+			numEntered = true;
+			return result;
 		
-		case ("+"):
-			return num1 + num2;
+		case ("-"): //user clicked the subtraction button
+			result = num1 - num2;
+			numberBox.setText(Double.toString(result));
+			numEntered = true;
+			return result;
 		
-		case ("*"):return num1 * num2;
+		case ("+"): //user clicked the addition button
+			result = num1 + num2;
+			numberBox.setText(Double.toString(result));
+			numEntered = true;
+			return result;
+			
+		case ("*"): //user clicked the multiplication button
+			result = num1 * num2;
+			numberBox.setText(Double.toString(result));
+			numEntered = true;
+			return result;
 		
-		case ("/"):
+		case ("/"): //user clicked the division button
 			if (num2 == 0) {
 				return 0;
 			} //if num2 is zero
-			return num1 / num2;
+			result = num1 / num2;
+			numberBox.setText(Double.toString(result));
+			numEntered = true;
+			return result;
 		
 			default:
 				return 0;
@@ -286,18 +339,18 @@ public class CalculatorApp extends Stage {
 	 */
 	
 	private void inputNumbers(ActionEvent numInput) {
-		if (start == true) {
+		/*if (start == true) {
 			numberBox.setText("");
 			start = false;
-		} //if
+		} //if*/
 		String numValue = ((Button)numInput.getSource()).getText();
 		numberBox.setText(numberBox.getText() + numValue);
 		numEntered = true;
 	} //inputNumbers
 	
 	/**
-	 * This method is executed by the ActionEvent assigned to all operator
-	 * buttons ont the calculator, and is responsible for "logging" the user's
+	 * This method is executed by the ActionEvent assigned to all operator (binary)
+	 * buttons on the calculator, and is responsible for "logging" the user's
 	 * clicked-operator for calculations to be performed later.
 	 * 
 	 * @param opInput the ActionEvent that signals an operator button has been clicked by the user
@@ -312,7 +365,7 @@ public class CalculatorApp extends Stage {
 				return;
 			} //if an operator was clicked
 			operatorChar = opValue;
-			num1 = Long.parseLong(numberBox.getText());
+			num1 = Double.parseDouble(numberBox.getText());
 			numberBox.setText("");
 		} //if equals button was not clicked
 		
@@ -325,10 +378,91 @@ public class CalculatorApp extends Stage {
 			numberBox.setText(String.valueOf(answer));
 			calculated = true;
 			operatorChar = "";
-			start = true;
-			numEntered = false;
+			//numEntered = false;
 		} //else (if user clicked "=")
 		} //if there is an actual number on which to perform calculations
 	} //inputOperators
 	
+	/**
+	 * This method calculates the factorial value of a specified double
+	 * supplied as input.
+	 */
+	private double factorial(double input) {
+		if (input < 0) {
+			return 0;
+		} //if user entered a negative number
+		if (input == 0) {
+		return 1;	
+		} //base case
+		else {
+			return (input * factorial(input - 1));
+		} //else (recursive case)
+	} //factorial
+	
+	/**
+	 * This method is executed by the ActionEvent assigned to all operator (unary)
+	 * buttons on the calculator, and is responsible for "logging" the user's
+	 * clicked-operator for calculations to be performed later.
+	 * 
+	 * @param opInput the ActionEvent that signals an operator button has been clicked by the user
+	 */
+	
+	private void inputOperatorsUnary(ActionEvent opInput) {
+		if (numEntered) {
+		String opValue = ((Button)opInput.getSource()).getText();
+		operatorChar = opValue;
+			if (operatorChar.isEmpty()) {
+				return;
+			} //if operatorChar is empty
+			num1 = Double.parseDouble(numberBox.getText());
+			double answer = calculateUnary(num1, operatorChar);
+			numberBox.setText(String.valueOf(answer));
+			calculated = true;
+			operatorChar = "";
+			//numEntered = false;
+		} //if there is an actual number on which to perform calculations
+	} //inputOperatorsUnary
+	
+	/**
+	 * This method performs the actual calculation specified by the user's
+	 * interation with the calculator. It uses a switch statement to differentiate between
+	 * the different operator buttons the user may select. This method is associated with
+	 * all the calculator's unary operations.
+	 * 
+	 * @param num1 the double representing the first number entered by the user
+	 * @param num2 the double representing the second number entered by the user (after the operator)
+	 * @param operation the String representing the mathematical operation the user wishes to carry out
+	 * between num1 & num2
+	 */
+	
+	private double calculateUnary(double num, String operation) {
+		double result;
+		switch(operation) {
+		
+		case ("!"):
+			result = factorial(num);
+			numberBox.setText(Double.toString(result));
+			numEntered = true;
+			return result;
+		
+		case ("ln(x)"):
+			result = Math.log(num);
+			numberBox.setText(Double.toString(result));
+			numEntered = true;
+			return result;
+		
+		case ("√x"):
+			result = Math.pow(num, 0.5);
+			numberBox.setText(Double.toString(result));
+			numEntered = true;
+			return result;
+		
+			default:
+				return 0;
+			
+		} //switch statement for user-entered operation
+	} //calculate
+	
 } //class
+
+
