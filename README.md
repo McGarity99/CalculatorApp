@@ -9,7 +9,7 @@ increased number of operands) may be added in the future.
 The user should launch the CalculatorDriver class in order
 to start the application.
 
-~Version 1.1 released September 2020~
+***Version 1.1 released September 2020
 This release adds:
 -the power "^" operator for user-defined exponents
 -the unary factorial "!" operator for calculating factorial values
