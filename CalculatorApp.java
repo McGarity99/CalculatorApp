@@ -7,6 +7,7 @@ import javafx.scene.text.Text;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.event.EventHandler;
+import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.paint.Color;
@@ -21,7 +22,7 @@ import javafx.scene.layout.BackgroundFill;
  * carrying out execution of the application.
  */
 
-public class CalculatorApp extends Stage {
+public class CalculatorApp extends Application {
 
 	HBox container;
 	HBox textHolder;
@@ -41,25 +42,28 @@ public class CalculatorApp extends Stage {
 	boolean start = true;
 	boolean numEntered = false;
 	boolean calculated = false;
+	CalculatorApp theApp;
+	Stage theStage = new Stage();
 	
 	EventHandler<ActionEvent> numClick, clearClick, operatorClick, unaryClick;
 	
 	Button zeroB, oneB, twoB, threeB, fourB, fiveB, sixB, sevenB, eightB, nineB, clearB,
 	plusB, minusB, equalsB, divB, multB, pwrB, lnB, factorB, sqRootB;
 	
+	public static void main(String[] args) {
+		launch(args);
+	} //main method
+	
 	/**
-	 * This method is the default constructor
-	 * and initializes the {@code CalculatorApp} object by
-	 * calling all necessary methods in order to build the
-	 * scene and set up action events, etc.
+	 * This is the overrided start method inherited from the {@code Application} class.
 	 */
 	
-	CalculatorApp() {
+	@Override public void start(Stage stage) {
 		setUpEvents();
 		setUpButtons();
 		setUpOther();
 		setUpScene();
-	} //constructor
+	} //sart
 	
 	/**
 	 * This method is responsible for creating all the {@code Button} objects
@@ -221,7 +225,7 @@ public class CalculatorApp extends Stage {
 		fifthRow = new HBox(2);
 		fifthRow.getChildren().addAll(pwrB, factorB, lnB, sqRootB);
 		
-		nameBox = new Text("Hunter McGarity | v1.1 | 9-2020");
+		nameBox = new Text("Hunter McGarity | v1.1 | 10-2020");
 		nameBox.setFill(Color.AQUA);
 		
 		root = new VBox(8);
@@ -239,9 +243,9 @@ public class CalculatorApp extends Stage {
 	private void setUpScene() {
 		
 		mainScene = new Scene(root);
-		this.setTitle("Calculator App");
-		this.setScene(mainScene);
-		this.show();
+		theStage.setTitle("Calculator App");
+		theStage.setScene(mainScene);
+		theStage.show();
 		
 	} //setUpScene
 	
